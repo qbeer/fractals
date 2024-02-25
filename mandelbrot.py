@@ -75,17 +75,20 @@ def mandelbrot_set(width, height, x_min, x_max, y_min, y_max, max_iter):
     mandelbrot.mandelbrot_set_cuda(output, width, height, x_min, x_max, y_min, y_max, max_iter)
     return output.cpu().numpy()
 
-def visualize_mandelbrot_set():
+def visualize_mandelbrot_set(scale=1):
     # Example usage:
-    width, height = 1024, 768
+    width, height = 1024*scale, 768*scale
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
-    max_iter = 1000
+    max_iter = 5000
 
     mandelbrot_fractal = mandelbrot_set(width, height, x_min, x_max, y_min, y_max, max_iter)
 
-    plt.imshow(mandelbrot_fractal, cmap='hot')
-    plt.axis('off')
+    cmap = plt.get_cmap('inferno')
+    mandelbrot_fractal = cmap(mandelbrot_fractal)
+
+    # NOTE: save as PIL image
+    from PIL import Image
+    img = Image.fromarray((mandelbrot_fractal * 255).astype('uint8'))
+    img.save(f'mandelbrot_{scale}.png')
     
-    plt.tight_layout()
-    plt.savefig('mandelbrot_set.png', dpi=1000)

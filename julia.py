@@ -76,18 +76,19 @@ def julia_set(width, height, x_min, x_max, y_min, y_max, c_re, c_im, max_iter):
     julia.julia_set_cuda(output, width, height, x_min, x_max, y_min, y_max, c_re, c_im, max_iter)
     return output.cpu().numpy()
 
-def visualize_julia_set():
+def visualize_julia_set(scale=1):
     # Example usage:
-    width, height = 2048, 768*2
+    width, height = 1024*scale, 768*scale
     x_min, x_max = -2.0, 2.0
     y_min, y_max = -1.5, 1.5
     c_re, c_im = -0.7, 0.27015  # Example constants for Julia set
-    max_iter = 2000
+    max_iter = 5000
 
     julia_fractal = julia_set(width, height, x_min, x_max, y_min, y_max, c_re, c_im, max_iter)
 
-    plt.imshow(julia_fractal, cmap='hot')
-    plt.axis('off')
+    cmap = plt.get_cmap('hot')
+    julia_fractal = cmap(julia_fractal)
     
-    plt.tight_layout()
-    plt.savefig('julia_set.png', dpi=1000)
+    from PIL import Image
+    img = Image.fromarray((julia_fractal * 255).astype('uint8'))
+    img.save(f'julia_fractal_{scale}.png')
